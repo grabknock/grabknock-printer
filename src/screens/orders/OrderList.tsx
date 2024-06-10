@@ -155,7 +155,7 @@ function OrderList({route, navigation}: any) {
         receiptContent += `<C>================================================</C>\n`;
 
         const itemsContent = orderDetail.data.data.line_items.map(
-          (item: LineItem, index) => {
+          (item: LineItem, index: any) => {
             
             const count = (++index).toString().padEnd(6);
             let textToPrint = `${count}${generateBillItemName(item)}`;

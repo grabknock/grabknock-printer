@@ -25,11 +25,11 @@ function Routes({navigation}: any) {
     })()
   }, [])
 
-  useEffect(() => {
-    if (authToken) {
-      navigation.replace('BluetoothDevices');
-    }
-  }, [authToken, navigation]);
+  // useEffect(() => {
+  //   if (authToken) {
+  //     navigation.replace('BluetoothDevices');
+  //   }
+  // }, [authToken, navigation]);
 
   return (
     // <WithAxios>
