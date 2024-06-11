@@ -73,6 +73,7 @@ export interface Order {
 }
 
 export const useOrders = (payload: OrderPayload) => {
+  console.log(payload, API_URL, "=================>>>>>>>>>>>>>")
   return useQuery({
     queryKey: ['orders'],
     queryFn: async () =>
@@ -88,5 +89,6 @@ export const useOrders = (payload: OrderPayload) => {
             console.dir(err.response, {depth: null});
           }
         }),
+        enabled: !!payload.restaurant_id
   });
 };

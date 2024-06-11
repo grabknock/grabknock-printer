@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
+import {Button, FlatList, Pressable, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import {
   Order,
   OrderMetaData,
@@ -14,12 +14,12 @@ import {LineItem, OrderDetail, useOrderDetail} from '../../api/orderDetail';
 import {IBLEPrinter} from 'react-native-thermal-receipt-printer';
 import {BLEPrinter} from 'react-native-thermal-receipt-printer';
 import { getStorageData } from '../../utils/jwt';
+import RNPickerSelect from 'react-native-picker-select';
 
 function OrderList({route, navigation}: any) {
   const {selectedPrinter} = route.params;
   const [auth, setAuth] = useState<any>({});
 
-  const {authData} = useContext(AuthContext);
   const [orderMetaData, setOrderMetaData] = useState<OrderMetaData | null>(
     null,
   );
@@ -31,9 +31,9 @@ function OrderList({route, navigation}: any) {
     (async() => {
       const authToken = JSON.parse(await getStorageData("ACCESS_TOKEN") || "");
       setAuth(authToken)
-      console.log(authToken);
+      console.log(authToken)
     })()
-  }, [auth])
+  }, [])
 
   const orderPayload = {
     restaurant_id: auth?.restaurant_id,
@@ -47,6 +47,18 @@ function OrderList({route, navigation}: any) {
 
   const {data: orderResponse, isLoading, refetch} = useOrders(orderPayload);
   const {data: orderDetail, isPaused} = useOrderDetail(orderToPrint);
+
+  const [count, setCount] = useState(1);
+
+  const increment = () => {
+    setCount(count + 1);
+  };
+
+  const decrement = () => {
+    if (count > 0) {
+      setCount(count - 1);
+    }
+  };
 
   useEffect(() => {
     if (orderResponse) {
@@ -86,7 +98,7 @@ function OrderList({route, navigation}: any) {
     }, MINUTE_MS);
 
     return () => clearInterval(interval);
-  }, [orders]);
+  }, [orders.length]);
 
   function itemSubstrings(itemName: string, length: number) {
     const substrings = [];
@@ -112,8 +124,7 @@ function OrderList({route, navigation}: any) {
     });
   };
 
-  // print when order detail is called
-  useEffect(() => {
+  const handlePrint = () => {
     if (orderToPrint.order_id) {
       if (orderDetail?.data.data.order_id) {
         console.log(
@@ -122,7 +133,7 @@ function OrderList({route, navigation}: any) {
           orderDetail?.data.data.order_id,
         );
 
-        let receiptContent = `<CM>${authData?.restaurant_name}</CM>\n\n`;
+        let receiptContent = `<CM>${auth?.restaurant_name}</CM>\n\n`;
         receiptContent += `<C>Order ID: ${orderToPrint.order_id}</C>\n\n`;
         receiptContent += `<D>Billed To: </D>\n`;
         receiptContent += `<L>${orderDetail.data.data.billing_address.first_name} ${orderDetail.data.data.billing_address.last_name}</L>\n`;
@@ -198,12 +209,20 @@ function OrderList({route, navigation}: any) {
         receiptContent += `<C>________________________________________________</C>\n`;
         receiptContent += `<C>Customer Signature</C>\n\n`;
         receiptContent += `<C>*******************************************</C>\n\n`;
-        receiptContent += `<C>Thank you for Ordering at ${authData?.restaurant_name}</C>\n\n\n`;
+        receiptContent += `<C>Thank you for Ordering at ${auth?.restaurant_name}</C>\n\n\n`;
 
 
         BLEPrinter.printText(receiptContent);
         setOrderToPrint({} as Order);
       }
+    }
+  }
+
+  // print when order detail is called
+  useEffect(() => {
+    console.log(orderDetail)
+    for (let i = 0; i < count; i++) {
+      handlePrint();
     }
   }, [orderToPrint, orderDetail]);
 
@@ -237,24 +256,36 @@ function OrderList({route, navigation}: any) {
                 </View>
             </View>
         </TouchableHighlight>
-      
     );
   };
 
   return (
     <SafeAreaView>
-      <View style={{...styles.listContainer, flexDirection: 'column', gap: 8}}>
-        <Text style={{...styles.title, fontSize: 26}}>
-          {authData?.restaurant_name}
-        </Text>
-        <View>
-          <Text style={{color: 'black', fontSize: 16}}>
-            Admin: {authData?.email_address}
+      <View style={{...styles.listContainer, flexDirection: 'column'}}>
+        <View style={{flexDirection: 'column', gap: 8}}>
+          <Text style={{...styles.title, fontSize: 26}}>
+            {auth?.restaurant_name}
           </Text>
-          <Text style={{color: 'black', fontSize: 16}}>
-            Total Orders:{' '}
-            <Text style={{fontWeight: '800'}}>{orderMetaData?.totalItems}</Text>
-          </Text>
+          <View>
+            <Text style={{color: 'black', fontSize: 16}}>
+              Admin: {auth?.email_address}
+            </Text>
+            <Text style={{color: 'black', fontSize: 16}}>
+              Total Orders:{' '}
+              <Text style={{fontWeight: '800'}}>{orderMetaData?.totalItems}</Text>
+            </Text>
+          </View>
+        </View>
+        <View style={styles.countercontainer}>
+
+          <View style={styles.counterbuttonContainer}>
+          <Text style={{...styles.countertext, color: 'black', fontSize: 16}}>No of copies: </Text>
+
+            <Pressable onPress={decrement}><Text style={{...styles.counterbuttontext, backgroundColor: "red", color: 'white', fontSize: 16}}>-</Text></Pressable>
+            <Text style={{...styles.countertext, color: 'black', fontSize: 16}}>{count}</Text>
+
+            <Pressable onPress={increment}><Text style={{...styles.counterbuttontext, backgroundColor: "green", color: 'white', fontSize: 16}}>+</Text></Pressable>
+          </View>
         </View>
       </View>
       <FlatList
@@ -266,9 +297,26 @@ function OrderList({route, navigation}: any) {
   );
 }
 
+const pickerSelectStyles = StyleSheet.create({
+  inputAndroid: {
+      fontSize: 16,
+      paddingHorizontal: 10,
+      paddingVertical: 8,
+      borderWidth: 0.5,
+      borderColor: 'black',
+      borderRadius: 8,
+      color: 'black',
+      paddingRight: 30
+  }
+});
+
+
 const styles = StyleSheet.create({
   listContainer: {
-    padding: 20,
+    paddingLeft: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
+    display: 'flex',
     borderBottomColor: 'lightgrey',
     borderWidth: 0.19,
     justifyContent: 'space-between',
@@ -290,6 +338,25 @@ const styles = StyleSheet.create({
   textGrey: {
     color: 'grey',
   },
+  countercontainer: {
+    justifyContent: 'center',
+  },
+  countertext: {
+    color: 'black',
+    fontSize: 24,
+  },
+  counterbuttonContainer: {
+    marginTop: 12,
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center'
+  },
+  counterbuttontext: {
+    textAlign: 'center',
+    backgroundColor: 'red',
+    padding: 10,
+    width: 30
+  }
 });
 
 export default OrderList;
