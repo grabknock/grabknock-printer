@@ -9,7 +9,7 @@ import {LoginPayload} from '../../api/auth';
 import {isAxiosError} from 'axios';
 import {stringMd5} from 'react-native-quick-md5';
 import {AuthContext} from '../../auth/AuthContext';
-import { storeData } from '../../utils/jwt';
+import { getStorageData, storeData } from '../../utils/jwt';
 
 function LoginScreen({navigation}: any) {
   const [email, onChangeEmail] = useState('asube001+admin@odu.edu');
@@ -17,6 +17,13 @@ function LoginScreen({navigation}: any) {
   const [loading, setLoading] = useState(false);
 
   // const {authData, setAuthData} = useContext(AuthContext);
+
+  useEffect(() => {
+    (async() => {
+      const authToken = JSON.parse(await getStorageData("ACCESS_TOKEN") || "");
+      if(authToken) navigation.navigate('BluetoothDevices')
+    })()
+  }, [])
 
   const {mutateAsync: postLogin, isPending: isLoginPending} = useLogin();
 

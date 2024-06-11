@@ -11,7 +11,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 //const authData = false;
 
 function App(this: any): React.JSX.Element {
-const queryClient = new QueryClient();
 
   useEffect(() => {
     PermissionsAndroid.request(
@@ -23,11 +22,9 @@ const queryClient = new QueryClient();
 
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <NavigationContainer>
+    
           <Routes />
-        </NavigationContainer>
-      </QueryClientProvider>
+        
     </AuthProvider>
   );
 }

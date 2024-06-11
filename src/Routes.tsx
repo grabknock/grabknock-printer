@@ -13,17 +13,11 @@ import { getStorageData } from './utils/jwt';
 
 const Stack = createNativeStackNavigator();
 
-function Routes({navigation}: any) {
+function Routes() {
   // const {authData} = useContext(AuthContext);
-  const [authToken, setAuthToken] = useState("");
+const queryClient = new QueryClient();
 
-  useEffect(() => {
-    (async() => {
-      const authToken = JSON.parse(await getStorageData("ACCESS_TOKEN") || "");
-      setAuthToken(authToken)
-      console.log(authToken);
-    })()
-  }, [])
+  
 
   // useEffect(() => {
   //   if (authToken) {
@@ -33,6 +27,8 @@ function Routes({navigation}: any) {
 
   return (
     // <WithAxios>
+    <QueryClientProvider client={queryClient}>
+        <NavigationContainer>
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
@@ -43,17 +39,17 @@ function Routes({navigation}: any) {
           fontWeight: 'bold',
         },
       }}>
-      {!authToken && (
         <Stack.Screen
           name="Login"
           component={LoginScreen}
           options={{headerShown: false}}
         />
-      )}
 
       <Stack.Screen name="BluetoothDevices" component={BluetoothDevices} options={{ title: 'Select BT Printer' }}/>
       <Stack.Screen name="OrderList" component={OrderList} options={{ title: 'Orders' }}/>
     </Stack.Navigator>
+    </NavigationContainer>
+      </QueryClientProvider>
     // </WithAxios>
   );
 }
