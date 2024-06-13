@@ -21,4 +21,13 @@ const getStorageData = async (key: string) => {
   }
 };
 
+export const removeStorageData = async (key: string) => {
+  try {
+    console.log(key)
+    await AsyncStorage.removeItem(key);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 export { storeData, getStorageData }
