@@ -12,8 +12,10 @@ import {AuthContext} from '../../auth/AuthContext';
 import { getStorageData, storeData } from '../../utils/jwt';
 
 function LoginScreen({navigation}: any) {
-  const [email, onChangeEmail] = useState('asube001+admin@odu.edu');
-  const [password, onChangePassword] = useState('Abiral1234?');
+  // const [email, onChangeEmail] = useState('asube001+admin@odu.edu');
+  // const [password, onChangePassword] = useState('Abiral1234?');
+  const [email, onChangeEmail] = useState('');
+  const [password, onChangePassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   // const {authData, setAuthData} = useContext(AuthContext);

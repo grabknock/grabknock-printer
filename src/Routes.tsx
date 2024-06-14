@@ -56,7 +56,7 @@ function Routes() {
                   removeStorageData('authToken');
                   navigation.navigate('Login');
                 };
-                return <Button onPress={logout} title="Logout" color="#cccc" />;
+                return <Button onPress={logout} title="Logout" color="#f4511e" />;
               },
             })}
           />
@@ -71,7 +71,7 @@ function Routes() {
                   removeStorageData('authToken');
                   navigation.navigate('Login');
                 };
-                return <Button onPress={logout} title="Logout" color="#cccc" />;
+                return <Button onPress={logout} title="Logout" color="#f4511e" />;
               },
             })}
           />

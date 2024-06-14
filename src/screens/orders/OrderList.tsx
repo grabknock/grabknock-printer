@@ -10,7 +10,7 @@ import {
 import {AuthContext} from '../../auth/AuthContext';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {LineItem, OrderDetail, useOrderDetail} from '../../api/orderDetail';
+import {Addon, FreeProduct, LineItem, OrderDetail, useOrderDetail} from '../../api/orderDetail';
 import {IBLEPrinter} from 'react-native-thermal-receipt-printer';
 import {BLEPrinter} from 'react-native-thermal-receipt-printer';
 import { getStorageData } from '../../utils/jwt';
@@ -104,8 +104,8 @@ function OrderList({route, navigation}: any) {
     const substrings = [];
     for (let i = 0; i < itemName.length; i += length) {
       let substring = itemName.substr(i, length);
-      if (substring.length < 22) {
-        substring = substring.padEnd(22);
+      if (substring.length < length) {
+        substring = substring.padEnd(length);
       }
       substrings.push(substring);
     }
@@ -113,11 +113,35 @@ function OrderList({route, navigation}: any) {
   }
 
 
+  // to do: make these 3 methods into a single method? same logic repeated in 3 places
   const generateBillItemName = (item: LineItem) => {
     return itemSubstrings(item.name, 22).map((itemLine: string, index) => {
       if (index === 0) { // 1st line of the item with price quantity and total
         const total = (item.price * item.product_quantity).toString().padEnd(4);
-        return  `${itemLine}  $${item.price.toString().padEnd(5)} ${item.product_quantity.toString().padEnd(5)} $${item.price * item.product_quantity}`;
+        return  `${itemLine}  $${item.price.toString().padEnd(5)} ${item.product_quantity.toString().padEnd(4)} $${item.price * item.product_quantity}`;
+      } else { // Other line of items
+        return  `\n      ${itemLine}`; 
+      }
+    });
+  };
+
+  const generateBillItemNameForFreeProduct = (item: FreeProduct) => {
+    return itemSubstrings(`${item.product_name}(Free)`, 22).map((itemLine: string, index) => {
+      if (index === 0) { // 1st line of the item with price quantity and total
+        const total = (0).toString().padEnd(4);
+        return  `${itemLine}  $${"0".toString().padEnd(5)} ${"1".padEnd(4)} $${0}`;
+      } else { // Other line of items
+        return  `\n      ${itemLine}`; 
+      }
+    });
+  };
+
+  const generateBillItemForAddOns = (item: Addon) => {
+    return itemSubstrings(item.ad_on_item_name, 17).map((itemLine: string, index) => {
+      if (index === 0) { // 1st line of the item with price quantity and total
+        const total = (item.price * 1).toString().padEnd(4);
+        //return  `${itemLine}  $${item.price.toString().padEnd(5)} ${"1".padEnd(4)} $${item.price * 1}`;
+        return  `${itemLine}  $${item.price.toString().padEnd(5)} ${"1".padEnd(4)}`;
       } else { // Other line of items
         return  `\n      ${itemLine}`; 
       }
@@ -162,7 +186,7 @@ function OrderList({route, navigation}: any) {
         receiptContent += `<R>Order Date: ${orderDetail.data.data.created_at_str}<L>\n\n`;
         receiptContent += `<L>Customer Note: ${orderDetail.data.data.customer_note}</L>\n`;
         receiptContent += `<C>================================================</C>\n`;
-        receiptContent += `<L>Sno   Item                    Price  Qty.  Tot.</L>\n`;
+        receiptContent += `<L>Sno   Item                    Price  Qty. Tot.</L>\n`;
         receiptContent += `<C>================================================</C>\n`;
 
         const itemsContent = orderDetail.data.data.line_items.map(
@@ -179,12 +203,28 @@ function OrderList({route, navigation}: any) {
 
 
             if (item.spice_level) {
-                receiptContent+= `<L>         - Spice: ${item.spice_level}</L>\n`
+                receiptContent+= `<L>        Spice: ${item.spice_level}</L>\n`
+            }
+
+            // add add on items
+            if (item.addons.length > 0) {
+              receiptContent+= `<L>${"Add On:".padStart(15)}</L>\n`
+              item.addons.map((addon: Addon, index: number) =>{
+                let addonToPrint = `${"- ".padStart(11)}${generateBillItemForAddOns(addon)}`;
+                receiptContent += `<L>${addonToPrint}</L>\n`;
+              });
             }
             
             return toPrint;
           },
         );
+
+        // add free item
+        if (orderDetail.data.data.free_product) {
+          receiptContent += `${(orderDetail.data.data.line_items.length + 1).toString().padEnd(6)}${generateBillItemNameForFreeProduct(orderDetail.data.data.free_product)}\n`;
+        }
+        
+
 
         receiptContent += `<C>================================================</C>\n\n`;
 
@@ -279,7 +319,7 @@ function OrderList({route, navigation}: any) {
         <View style={styles.countercontainer}>
 
           <View style={styles.counterbuttonContainer}>
-          <Text style={{...styles.countertext, color: 'black', fontSize: 16}}>No of copies: </Text>
+          <Text style={{...styles.countertext, color: 'black', fontSize: 16}}>No. of Copies: </Text>
 
             <Pressable onPress={decrement}><Text style={{...styles.counterbuttontext, backgroundColor: "red", color: 'white', fontSize: 16}}>-</Text></Pressable>
             <Text style={{...styles.countertext, color: 'black', fontSize: 16}}>{count}</Text>
@@ -354,8 +394,9 @@ const styles = StyleSheet.create({
   counterbuttontext: {
     textAlign: 'center',
     backgroundColor: 'red',
-    padding: 10,
-    width: 30
+    padding: 4,
+    width: 30,
+    fontWeight: 900
   }
 });
 
