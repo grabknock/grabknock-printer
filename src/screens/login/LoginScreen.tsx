@@ -18,6 +18,7 @@ import {stringMd5} from 'react-native-quick-md5';
 import {AuthContext} from '../../auth/AuthContext';
 import {getStorageData, storeData} from '../../utils/jwt';
 import {TextInput} from 'react-native-paper';
+import Toast from 'react-native-toast-message';
 
 function LoginScreen({navigation}: any) {
   // const [email, onChangeEmail] = useState('asube001+admin@odu.edu');
@@ -47,25 +48,32 @@ function LoginScreen({navigation}: any) {
       const {data} = await postLogin({
         email_address: email,
         password: stringMd5(password),
-        //password: password,
         user_source: 'BASIC',
         device_platform: 'WEB',
       });
       setLoading(false);
       // setAuthData(data.data);
-      console.log('stored');
       storeData('ACCESS_TOKEN', JSON.stringify(data.data));
-      // to do: call login api
+
+      Toast.show({
+        type: "success",
+        text1: "Login Successful!",
+        position: "bottom"
+      })
+
       //navigation.navigate('OrderList');
 
       navigation.navigate('BluetoothDevices');
     } catch (err) {
-      console.error('handleLogin err', err);
+      setLoading(false)
       if (isAxiosError(err)) {
-        console.error('isAxiosError', err);
-        console.log(err.response);
-        console.dir(err.response, {depth: null});
+        console.error("Error during login", err.response);
       }
+      Toast.show({
+        type: "error",
+        text1: "Login Failed!",
+        position: "bottom"
+      })
     }
   };
 
@@ -152,8 +160,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'lightgrey',
     borderRadius: 6,
-    color: 'black'
-  },
+    color: 'black',
+    shadowColor: 'none',
+    elevation: 0
+  }
 });
 
 export default LoginScreen;
