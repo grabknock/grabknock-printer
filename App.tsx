@@ -4,14 +4,13 @@ import Config from 'react-native-config';
 import {PermissionsAndroid} from 'react-native';
 import AuthProvider from './src/auth/AuthContext';
 import Routes from './src/Routes';
-import { NavigationContainer } from '@react-navigation/native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
+import {PaperProvider} from 'react-native-paper';
+import {NavigationContainer} from '@react-navigation/native';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
 //const authData = false;
 
 function App(this: any): React.JSX.Element {
-
   useEffect(() => {
     PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
@@ -22,9 +21,9 @@ function App(this: any): React.JSX.Element {
 
   return (
     <AuthProvider>
-    
-          <Routes />
-        
+      <PaperProvider>
+        <Routes />
+      </PaperProvider>
     </AuthProvider>
   );
 }

@@ -1,5 +1,12 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Button, Image, StyleSheet, Text, TextInput, View, ActivityIndicator} from 'react-native';
+import {
+  Button,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Separator from '../../components/Separator';
@@ -9,7 +16,8 @@ import {LoginPayload} from '../../api/auth';
 import {isAxiosError} from 'axios';
 import {stringMd5} from 'react-native-quick-md5';
 import {AuthContext} from '../../auth/AuthContext';
-import { getStorageData, storeData } from '../../utils/jwt';
+import {getStorageData, storeData} from '../../utils/jwt';
+import {TextInput} from 'react-native-paper';
 
 function LoginScreen({navigation}: any) {
   // const [email, onChangeEmail] = useState('asube001+admin@odu.edu');
@@ -17,15 +25,18 @@ function LoginScreen({navigation}: any) {
   const [email, onChangeEmail] = useState('');
   const [password, onChangePassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // const {authData, setAuthData} = useContext(AuthContext);
 
   useEffect(() => {
-    (async() => {
-      const authToken = JSON.parse(await getStorageData("ACCESS_TOKEN") || "");
-      if(authToken) navigation.navigate('BluetoothDevices')
-    })()
-  }, [])
+    (async () => {
+      const authToken = JSON.parse(
+        (await getStorageData('ACCESS_TOKEN')) || '',
+      );
+      if (authToken) navigation.navigate('BluetoothDevices');
+    })();
+  }, []);
 
   const {mutateAsync: postLogin, isPending: isLoginPending} = useLogin();
 
@@ -33,7 +44,7 @@ function LoginScreen({navigation}: any) {
     try {
       setLoading(true);
       console.log('handleLogin');
-      const { data } = await postLogin({
+      const {data} = await postLogin({
         email_address: email,
         password: stringMd5(password),
         //password: password,
@@ -42,11 +53,11 @@ function LoginScreen({navigation}: any) {
       });
       setLoading(false);
       // setAuthData(data.data);
-      console.log("stored")
-      storeData("ACCESS_TOKEN", JSON.stringify(data.data))
+      console.log('stored');
+      storeData('ACCESS_TOKEN', JSON.stringify(data.data));
       // to do: call login api
       //navigation.navigate('OrderList');
-      
+
       navigation.navigate('BluetoothDevices');
     } catch (err) {
       console.error('handleLogin err', err);
@@ -62,11 +73,9 @@ function LoginScreen({navigation}: any) {
     <View style={{...styles.container, justifyContent: 'space-between'}}>
       {/* <Text style={styles.title}>Admin Login</Text> */}
       <View style={styles.container}>
-      {
-        loading ? (
+        {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
-        ): 
-        (
+        ) : (
           <>
             <Image
               style={styles.img}
@@ -75,29 +84,36 @@ function LoginScreen({navigation}: any) {
 
             <View>
               <TextInput
+                label="Email"
                 style={styles.input}
                 onChangeText={onChangeEmail}
                 value={email}
                 placeholder="Email"
-                placeholderTextColor="#000" 
+                placeholderTextColor="#000"
               />
 
               <Separator marginVertical={4} />
 
               <TextInput
-                secureTextEntry={true}
+                label="Password"
+                secureTextEntry={!showPassword}
                 style={styles.input}
                 onChangeText={onChangePassword}
                 value={password}
                 placeholder="Password"
-                placeholderTextColor="#000" 
+                placeholderTextColor="#000"
+                right={
+                  <TextInput.Icon
+                    icon={showPassword ? 'eye-off' : 'eye'}
+                    onPress={() => setShowPassword(!showPassword)}
+                  />
+                }
               />
             </View>
 
             <CustomButton text={'Login'} onPress={handleLogin} />
           </>
-        )
-      }
+        )}
       </View>
     </View>
   );
@@ -134,7 +150,6 @@ const styles = StyleSheet.create({
   input: {
     margin: 1,
     borderWidth: 1,
-    padding: 10,
     borderColor: 'lightgrey',
     borderRadius: 6,
     color: 'black'
