@@ -1,12 +1,12 @@
 import { Dispatch, SetStateAction } from "react";
 
 export type AuthContextData = {
-    authData?: UserData;
+    authData?: UserData | null;
     //setAuthData?: Dispatch<SetStateAction<UserData | undefined>>;
-    setAuthData: any;
+    setAuthData?: any;
+    userLogin: (data: UserData) => boolean;
+    userLogout: () => void;
     //loading: boolean;
-    // signIn(): Promise<void>;
-    // signOut(): void;
   };
 
 
@@ -27,7 +27,7 @@ export interface UserData {
     avatar_url: string | null | undefined;
     is_notification_enabled: boolean;
     status: string;
-    access_tokem: AccessToken;
+    access_token: AccessToken;
     created_at: number;
     created_at_str: string;
     updated_at: number;

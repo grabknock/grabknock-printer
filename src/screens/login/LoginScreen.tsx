@@ -21,21 +21,22 @@ import {TextInput} from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 
 function LoginScreen({navigation}: any) {
-  // const [email, onChangeEmail] = useState('asube001+admin@odu.edu');
-  // const [password, onChangePassword] = useState('Abiral1234?');
+  //const [email, onChangeEmail] = useState('asube001+admin@odu.edu');
+  //const [password, onChangePassword] = useState('Abiral1234?');
   const [email, onChangeEmail] = useState('');
   const [password, onChangePassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // const {authData, setAuthData} = useContext(AuthContext);
+  const {authData, userLogin: userLoginContext} = useContext(AuthContext);
 
   useEffect(() => {
+    if (authData) navigation.navigate('BluetoothDevices');
+
     (async () => {
-      const authToken = JSON.parse(
-        (await getStorageData('ACCESS_TOKEN')) || '',
-      );
-      if (authToken) navigation.navigate('BluetoothDevices');
+      // get email from local storage
+      const storageEmail = await getStorageData('ADMIN_EMAIL');
+      if (storageEmail) onChangeEmail(storageEmail);
     })();
   }, []);
 
@@ -53,27 +54,27 @@ function LoginScreen({navigation}: any) {
       });
       setLoading(false);
       // setAuthData(data.data);
-      storeData('ACCESS_TOKEN', JSON.stringify(data.data));
+      userLoginContext(data.data);
 
       Toast.show({
-        type: "success",
-        text1: "Login Successful!",
-        position: "bottom"
-      })
+        type: 'success',
+        text1: 'Login Successful!',
+        position: 'bottom',
+      });
 
-      //navigation.navigate('OrderList');
+      navigation.navigate('OrderList');
 
-      navigation.navigate('BluetoothDevices');
+      //navigation.navigate('BluetoothDevices');
     } catch (err) {
-      setLoading(false)
+      setLoading(false);
       if (isAxiosError(err)) {
-        console.error("Error during login", err.response);
+        console.error('Error during login', err.response);
       }
       Toast.show({
-        type: "error",
-        text1: "Login Failed!",
-        position: "bottom"
-      })
+        type: 'error',
+        text1: 'Login Failed!',
+        position: 'bottom',
+      });
     }
   };
 
@@ -163,8 +164,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     color: 'black',
     shadowColor: 'none',
-    elevation: 0
-  }
+    elevation: 0,
+  },
 });
 
 export default LoginScreen;

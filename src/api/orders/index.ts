@@ -76,10 +76,12 @@ export const useOrders = (payload: OrderPayload) => {
   console.log(payload, API_URL, "=================>>>>>>>>>>>>>")
   return useQuery({
     queryKey: ['orders'],
-    queryFn: async () =>
+    retry: 3,
+    queryFn: async ({ signal }) =>
       await axios
         .get<OrderResponse>(API_URL + '/restaurant-order', {
           params: {...payload},
+          signal
         })
         .catch(err => {
           console.error(err);
@@ -88,6 +90,7 @@ export const useOrders = (payload: OrderPayload) => {
             console.log(err.response);
             console.dir(err.response, {depth: null});
           }
+          return null;
         }),
         enabled: !!payload.restaurant_id
   });
