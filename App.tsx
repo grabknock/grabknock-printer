@@ -4,29 +4,14 @@ import Config from 'react-native-config';
 import {PermissionsAndroid} from 'react-native';
 import AuthProvider from './src/auth/AuthContext';
 import Routes from './src/Routes';
-import {PaperProvider} from 'react-native-paper';
+import {PaperProvider, MD3LightTheme as DefaultTheme} from 'react-native-paper';
 import Toast, {
   BaseToastProps,
   ErrorToast,
   SuccessToast,
 } from 'react-native-toast-message';
-import {NavigationContainer} from '@react-navigation/native';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-
-//const authData = false;
 
 function App(this: any): React.JSX.Element {
-  useEffect(() => {
-    PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-    );
-    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN);
-    console.log(Config.API_URL);
-  }, []);
-
-  /*
-  1. Create the config
-*/
   const toastConfig = {
     success: (props: BaseToastProps) => (
       <SuccessToast
@@ -47,10 +32,29 @@ function App(this: any): React.JSX.Element {
     ),
   };
 
+  const theme = {
+    ...DefaultTheme,
+    myOwnProperty: true,
+    colors: {
+      primary: "#1B1B1E",
+      //secondary: "#49CC93",
+      //tertiary: "#49CC93",
+      background: "#FFFFFF"
+    }
+  };
+
+  useEffect(() => {
+    PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+    );
+    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN);
+    console.log(Config.API_URL);
+  }, []);
+
   return (
     <>
       <AuthProvider>
-        <PaperProvider>
+        <PaperProvider theme={theme}>
           <Routes />
         </PaperProvider>
       </AuthProvider>

@@ -1,26 +1,28 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
-  Button,
   Image,
   StyleSheet,
-  Text,
   View,
-  ActivityIndicator,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import Separator from '../../components/Separator';
 import CustomButton from '../../components/buttons/CustomButton';
 import {useLogin} from '../../api/auth';
-import {LoginPayload} from '../../api/auth';
 import {isAxiosError} from 'axios';
 import {stringMd5} from 'react-native-quick-md5';
 import {AuthContext} from '../../auth/AuthContext';
-import {getStorageData, storeData} from '../../utils/jwt';
-import {TextInput} from 'react-native-paper';
+import {getStorageData} from '../../utils/jwt';
+import {TextInput, Text} from 'react-native-paper';
 import Toast from 'react-native-toast-message';
+import {useTheme} from 'react-native-paper';
+import AppLoader from '../../components/loader/AppLoader';
 
 function LoginScreen({navigation}: any) {
+  const theme = useTheme();
+
   //const [email, onChangeEmail] = useState('asube001+admin@odu.edu');
   //const [password, onChangePassword] = useState('Abiral1234?');
   const [email, onChangeEmail] = useState('');
@@ -29,6 +31,9 @@ function LoginScreen({navigation}: any) {
   const [showPassword, setShowPassword] = useState(false);
 
   const {authData, userLogin: userLoginContext} = useContext(AuthContext);
+
+  const passwordInputRef = useRef<any>(null);
+  const loginButtonRef = useRef<any>(null);
 
   useEffect(() => {
     if (authData) navigation.navigate('BluetoothDevices');
@@ -53,7 +58,6 @@ function LoginScreen({navigation}: any) {
         device_platform: 'WEB',
       });
       setLoading(false);
-      // setAuthData(data.data);
       userLoginContext(data.data);
 
       Toast.show({
@@ -78,53 +82,110 @@ function LoginScreen({navigation}: any) {
     }
   };
 
+  if (loading) {
+    return <AppLoader />;
+  }
+
   return (
-    <View style={{...styles.container, justifyContent: 'space-between'}}>
-      {/* <Text style={styles.title}>Admin Login</Text> */}
-      <View style={styles.container}>
-        {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : (
-          <>
-            <Image
-              style={styles.img}
-              source={require('../../assets/img/grabknock.png')}
-            />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{flex: 1}}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View
+          style={{
+            display: 'flex',
+            flex: 1,
+            backgroundColor: theme.colors.background,
+          }}>
+          <View
+            style={{
+              display: 'flex',
+              flex: 1,
+            }}>
+            <View style={{...styles.container, justifyContent: 'center'}}>
+              <View>
+                <Image
+                  style={styles.img}
+                  source={require('../../assets/img/grabknock.png')}
+                />
+              </View>
+              <View>
+                <Text variant="headlineSmall">Welcome to</Text>
+                <Text
+                  variant="displayMedium"
+                  style={{fontWeight: 800, color: theme.colors.primary}}>
+                  Grabknock
+                </Text>
+              </View>
 
-            <View>
-              <TextInput
-                label="Email"
-                style={styles.input}
-                onChangeText={onChangeEmail}
-                value={email}
-                placeholder="Email"
-                placeholderTextColor="#000"
-              />
+              <View>
+                <Text variant="bodyLarge">
+                  <Text style={{fontWeight: 800, color: theme.colors.primary}}>
+                    Sign In
+                  </Text>{' '}
+                  using you{' '}
+                  <Text style={{fontWeight: 800, color: theme.colors.primary}}>
+                    restaurant admin
+                  </Text>{' '}
+                  account.
+                </Text>
+              </View>
 
-              <Separator marginVertical={4} />
+              <View>
+                <TextInput
+                  label="Email"
+                  mode="outlined"
+                  style={styles.input}
+                  onChangeText={onChangeEmail}
+                  value={email}
+                  placeholder="Email"
+                  placeholderTextColor="#000"
+                  onSubmitEditing={() => passwordInputRef?.current?.focus()}
+                />
 
-              <TextInput
-                label="Password"
-                secureTextEntry={!showPassword}
-                style={styles.input}
-                onChangeText={onChangePassword}
-                value={password}
-                placeholder="Password"
-                placeholderTextColor="#000"
-                right={
-                  <TextInput.Icon
-                    icon={showPassword ? 'eye-off' : 'eye'}
-                    onPress={() => setShowPassword(!showPassword)}
-                  />
-                }
-              />
+                <Separator marginVertical={4} />
+
+                <TextInput
+                  label="Password"
+                  mode="outlined"
+                  secureTextEntry={!showPassword}
+                  style={styles.input}
+                  onChangeText={onChangePassword}
+                  value={password}
+                  placeholder="Password"
+                  placeholderTextColor="#000"
+                  ref={passwordInputRef}
+                  onSubmitEditing={() => loginButtonRef?.current?.focus()}
+                  right={
+                    <TextInput.Icon
+                      style={{marginTop: 12}}
+                      icon={showPassword ? 'eye-off' : 'eye'}
+                      onPress={() => setShowPassword(!showPassword)}
+                    />
+                  }
+                />
+              </View>
+              <View>
+                <CustomButton
+                  ref={loginButtonRef}
+                  text={'Login'}
+                  onPress={handleLogin}
+                />
+              </View>
             </View>
-
-            <CustomButton text={'Login'} onPress={handleLogin} />
-          </>
-        )}
-      </View>
-    </View>
+            <View style={{marginBottom: 10, alignItems: 'center'}}>
+              <Text variant="bodyMedium">
+                Copyright © {new Date().getFullYear()}{' '}
+                <Text style={{fontWeight: 800, color: theme.colors.primary}}>
+                  GrabKnock
+                </Text>
+                . All Rights Reserved
+              </Text>
+            </View>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -134,9 +195,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     flex: 1,
     alignItems: 'stretch',
-    justifyContent: 'center',
+    //justifyContent: 'center',
     gap: 30,
-    marginHorizontal: 14,
+    marginHorizontal: 24,
   },
   img: {
     alignSelf: 'center',
@@ -157,14 +218,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   input: {
-    margin: 1,
-    borderWidth: 1,
-    borderColor: 'lightgrey',
-    backgroundColor: 'transparent',
     borderRadius: 6,
-    color: 'black',
-    shadowColor: 'none',
-    elevation: 0,
+    height: 55,
   },
 });
 
