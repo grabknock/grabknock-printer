@@ -17,16 +17,6 @@ function Routes() {
 
   const [nav, setNav] = useState<any>(null)
 
-  // Redirect the user to login page if th auth data is null
-  // to do: must be a better way to do this
-  useEffect(() => {
-    if (nav != null && authData == null) {
-      queryClient.cancelQueries()
-        .then(() => nav.navigate("Login"));
-      
-    }
-  }, [nav, authData])
-  
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -42,7 +32,7 @@ function Routes() {
             },
           }}>
           {/* removes the login screen completly from navigation stack if user is Logged in */}
-          {/* Moves to the next available navigation */}
+          {/* Moves to the next available navigation after login */}
           {!authData && ( 
             <Stack.Screen
               name="Login"
@@ -55,32 +45,14 @@ function Routes() {
             name="BluetoothDevices"
             component={BluetoothDevices}
             options={({navigation}) => ({
-              title: 'Select BT Printer',
-              headerRight: () => {
-                const logout = () => {
-                  userLogoutContext();
-                  setNav(navigation)
-                };
-                return (
-                  <Button onPress={logout} title="Logout" color="#f4511e" />
-                );
-              },
+              headerShown: false
             })}
           />
           <Stack.Screen
             name="OrderList"
             component={OrderList}
             options={({navigation}) => ({
-              title: 'Orders',
-              headerRight: () => {
-                const logout = () => {
-                  userLogoutContext();
-                  setNav(navigation)
-                };
-                return (
-                  <Button onPress={logout} title="Logout" color="#f4511e" />
-                );
-              },
+              headerShown: false
             })}
           />
         </Stack.Navigator>

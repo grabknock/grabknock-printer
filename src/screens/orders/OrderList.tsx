@@ -15,9 +15,12 @@ import {IBLEPrinter} from 'react-native-thermal-receipt-printer';
 import {BLEPrinter} from 'react-native-thermal-receipt-printer';
 import { getStorageData } from '../../utils/jwt';
 import RNPickerSelect from 'react-native-picker-select';
+import { useTheme } from 'react-native-paper';
+import AppHeader from '../../components/header/AppHeader';
 
 function OrderList({route, navigation}: any) {
   //const {selectedPrinter} = route.params;
+  const theme = useTheme();
   const {authData} = useContext(AuthContext);
 
   const [orderMetaData, setOrderMetaData] = useState<OrderMetaData | null>(
@@ -311,7 +314,9 @@ function OrderList({route, navigation}: any) {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{backgroundColor: theme.colors.background, flex: 1}}>
+      <View style={{marginHorizontal: 10}}>
+        <AppHeader title='Orders' navigation={navigation} backButton={true}/>
       <View style={{...styles.listContainer, flexDirection: 'column'}}>
         <View style={{flexDirection: 'column', gap: 8}}>
           <Text style={{...styles.title, fontSize: 26}}>
@@ -344,6 +349,7 @@ function OrderList({route, navigation}: any) {
         renderItem={({item}) => <OrderTile order={item} />}
         keyExtractor={item => item.order_id}
       />
+      </View>
     </SafeAreaView>
   );
 }

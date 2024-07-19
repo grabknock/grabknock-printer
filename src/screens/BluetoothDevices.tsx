@@ -6,21 +6,15 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
 import {BLEPrinter} from 'react-native-thermal-receipt-printer';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import {AuthContext} from '../auth/AuthContext';
+import {Button, IconButton, MD3Colors, Text} from 'react-native-paper';
+import {useTheme} from 'react-native-paper';
+import CustomButton from '../components/buttons/CustomButton';
+import AppHeader from '../components/header/AppHeader';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -32,6 +26,8 @@ interface IBLEPrinter {
 }
 
 function BluetoothDevices({navigation}: any): React.JSX.Element {
+  const theme = useTheme();
+
   const [printers, setPrinters] = useState<any>([]);
   const [currentPrinter, setCurrentPrinter] = useState<any>();
 
@@ -50,8 +46,8 @@ function BluetoothDevices({navigation}: any): React.JSX.Element {
         setCurrentPrinter(selectedPrinter);
         //printTextTest();
         navigation.navigate('OrderList', {
-          selectedPrinter: selectedPrinter
-        })
+          selectedPrinter: selectedPrinter,
+        });
       },
       error => console.warn(error),
     );
@@ -81,19 +77,16 @@ function BluetoothDevices({navigation}: any): React.JSX.Element {
   };
 
   return (
-    <SafeAreaView>
-      <FlatList
-        data={printers}
-        renderItem={({item}) => <PrinterTile printer={item} />}
-        keyExtractor={item => item.inner_mac_address}
-      />
-
-      {/* <TouchableOpacity onPress={printTextTest}>
-        <Text>Print Text</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={printBillTest}>
-        <Text>Print Bill Text</Text>
-      </TouchableOpacity> */}
+    <SafeAreaView style={{backgroundColor: theme.colors.background, flex: 1}}>
+      <View style={{marginHorizontal: 10}}>
+        <AppHeader title="Bluetooh Devices" navigation={navigation} />
+        <FlatList
+          style={{backgroundColor: theme.colors.background, flex: 1}}
+          data={printers}
+          renderItem={({item}) => <PrinterTile printer={item} />}
+          keyExtractor={item => item.inner_mac_address}
+        />
+      </View>
     </SafeAreaView>
   );
 }

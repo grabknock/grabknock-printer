@@ -66,9 +66,8 @@ function LoginScreen({navigation}: any) {
         position: 'bottom',
       });
 
-      navigation.navigate('OrderList');
-
-      //navigation.navigate('BluetoothDevices');
+      //navigation.navigate('OrderList');
+      navigation.navigate('BluetoothDevices');
     } catch (err) {
       setLoading(false);
       if (isAxiosError(err)) {
@@ -123,7 +122,7 @@ function LoginScreen({navigation}: any) {
                   <Text style={{fontWeight: 800, color: theme.colors.primary}}>
                     Sign In
                   </Text>{' '}
-                  using you{' '}
+                  using your{' '}
                   <Text style={{fontWeight: 800, color: theme.colors.primary}}>
                     restaurant admin
                   </Text>{' '}
@@ -133,6 +132,7 @@ function LoginScreen({navigation}: any) {
 
               <View>
                 <TextInput
+                  textColor={theme.colors.primary}
                   label="Email"
                   mode="outlined"
                   style={styles.input}
@@ -146,6 +146,7 @@ function LoginScreen({navigation}: any) {
                 <Separator marginVertical={4} />
 
                 <TextInput
+                  textColor={theme.colors.primary}
                   label="Password"
                   mode="outlined"
                   secureTextEntry={!showPassword}
