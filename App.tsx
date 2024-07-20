@@ -39,8 +39,9 @@ function App(this: any): React.JSX.Element {
       primary: "#49494C",
       onSurface: "#AAAAAA", // text
       //secondary: "#49CC93",
-      //tertiary: "#49CC93",
-      background: "#FFFFFF"
+      tertiary: "#49CC93",
+      background: "#FFFFFF",
+      onSurfaceVariant: "#AAAAAA" // placeholder
     }
   };
 

@@ -86,107 +86,102 @@ function LoginScreen({navigation}: any) {
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{flex: 1}}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View
+        style={{
+          display: 'flex',
+          flex: 1,
+          backgroundColor: theme.colors.background,
+        }}>
         <View
           style={{
             display: 'flex',
             flex: 1,
-            backgroundColor: theme.colors.background,
           }}>
-          <View
-            style={{
-              display: 'flex',
-              flex: 1,
-            }}>
-            <View style={{...styles.container, justifyContent: 'center'}}>
-              <View>
-                <Image
-                  style={styles.img}
-                  source={require('../../assets/img/grabknock.png')}
-                />
-              </View>
-              <View>
-                <Text variant="headlineSmall">Welcome to</Text>
-                <Text
-                  variant="displayMedium"
-                  style={{fontWeight: 800, color: theme.colors.primary}}>
-                  Grabknock
-                </Text>
-              </View>
-
-              <View>
-                <Text variant="bodyLarge">
-                  <Text style={{fontWeight: 800, color: theme.colors.primary}}>
-                    Sign In
-                  </Text>{' '}
-                  using your{' '}
-                  <Text style={{fontWeight: 800, color: theme.colors.primary}}>
-                    restaurant admin
-                  </Text>{' '}
-                  account.
-                </Text>
-              </View>
-
-              <View>
-                <TextInput
-                  textColor={theme.colors.primary}
-                  label="Email"
-                  mode="outlined"
-                  style={styles.input}
-                  onChangeText={onChangeEmail}
-                  value={email}
-                  placeholder="Email"
-                  placeholderTextColor="#000"
-                  onSubmitEditing={() => passwordInputRef?.current?.focus()}
-                />
-
-                <Separator marginVertical={4} />
-
-                <TextInput
-                  textColor={theme.colors.primary}
-                  label="Password"
-                  mode="outlined"
-                  secureTextEntry={!showPassword}
-                  style={styles.input}
-                  onChangeText={onChangePassword}
-                  value={password}
-                  placeholder="Password"
-                  placeholderTextColor="#000"
-                  ref={passwordInputRef}
-                  onSubmitEditing={() => loginButtonRef?.current?.focus()}
-                  right={
-                    <TextInput.Icon
-                      style={{marginTop: 12}}
-                      icon={showPassword ? 'eye-off' : 'eye'}
-                      onPress={() => setShowPassword(!showPassword)}
-                    />
-                  }
-                />
-              </View>
-              <View>
-                <CustomButton
-                  ref={loginButtonRef}
-                  text={'Login'}
-                  onPress={handleLogin}
-                />
-              </View>
+          <View style={{...styles.container, justifyContent: 'center'}}>
+            <View>
+              <Image
+                style={styles.img}
+                source={require('../../assets/img/grabknock.png')}
+              />
             </View>
-            <View style={{marginBottom: 10, alignItems: 'center'}}>
-              <Text variant="bodyMedium">
-                Copyright © {new Date().getFullYear()}{' '}
-                <Text style={{fontWeight: 800, color: theme.colors.primary}}>
-                  GrabKnock
-                </Text>
-                . All Rights Reserved
+            <View>
+              <Text variant="headlineSmall">Welcome to</Text>
+              <Text
+                variant="displayMedium"
+                style={{fontWeight: 800, color: theme.colors.primary}}>
+                Grabknock
               </Text>
             </View>
+
+            <View>
+              <Text variant="bodyLarge">
+                <Text style={{fontWeight: 800, color: theme.colors.primary}}>
+                  Sign In
+                </Text>{' '}
+                using your{' '}
+                <Text style={{fontWeight: 800, color: theme.colors.primary}}>
+                  restaurant admin
+                </Text>{' '}
+                account.
+              </Text>
+            </View>
+
+            <View>
+              <TextInput
+                textColor={theme.colors.primary}
+                label="Email"
+                mode="outlined"
+                style={styles.input}
+                onChangeText={onChangeEmail}
+                value={email}
+                placeholder="Email"
+                placeholderTextColor="#000"
+                onSubmitEditing={() => passwordInputRef?.current?.focus()}
+              />
+
+              <Separator marginVertical={4} />
+
+              <TextInput
+                textColor={theme.colors.primary}
+                label="Password"
+                mode="outlined"
+                secureTextEntry={!showPassword}
+                style={styles.input}
+                onChangeText={onChangePassword}
+                value={password}
+                placeholder="Password"
+                ref={passwordInputRef}
+                onSubmitEditing={() => loginButtonRef?.current?.focus()}
+                right={
+                  <TextInput.Icon
+                    style={{marginTop: 12}}
+                    icon={showPassword ? 'eye-off' : 'eye'}
+                    onPress={() => setShowPassword(!showPassword)}
+                  />
+                }
+              />
+            </View>
+            <View>
+              <CustomButton
+                ref={loginButtonRef}
+                text={'Login'}
+                onPress={handleLogin}
+              />
+            </View>
+          </View>
+          <View style={{marginBottom: 10, alignItems: 'center'}}>
+            <Text variant="bodyMedium">
+              Copyright © {new Date().getFullYear()}{' '}
+              <Text style={{fontWeight: 800, color: theme.colors.primary}}>
+                GrabKnock
+              </Text>
+              . All Rights Reserved
+            </Text>
           </View>
         </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
