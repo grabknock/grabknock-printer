@@ -73,7 +73,6 @@ export interface Order {
 }
 
 export const useOrders = (payload: OrderPayload) => {
-  console.log(payload, API_URL, "=================>>>>>>>>>>>>>")
   return useQuery({
     queryKey: ['orders'],
     retry: 3,
