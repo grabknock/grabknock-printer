@@ -317,7 +317,7 @@ function OrderList({route, navigation}: any) {
     <SafeAreaView style={{backgroundColor: theme.colors.background, flex: 1}}>
       <View style={{marginHorizontal: 10}}>
         <AppHeader title='Orders' navigation={navigation} backButton={true}/>
-      <View style={{...styles.listContainer, flexDirection: 'column'}}>
+      <View style={{...styles.listContainer, flexDirection: 'column', marginTop: 20, backgroundColor: "#FFCDC3"}}>
         <View style={{flexDirection: 'column', gap: 8}}>
           <Text style={{...styles.title, fontSize: 26}}>
             {authData?.restaurant_name}
@@ -370,13 +370,13 @@ const pickerSelectStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   listContainer: {
-    paddingLeft: 20,
-    paddingTop: 20,
-    paddingBottom: 20,
+    borderRadius: 6,
+    padding: 20,
     display: 'flex',
-    borderBottomColor: 'lightgrey',
-    borderWidth: 0.19,
+    borderWidth: 1.5,
     justifyContent: 'space-between',
+    marginVertical: 6,
+    backgroundColor: '#F6F6F8',
   },
   title: {
     color: 'black',
