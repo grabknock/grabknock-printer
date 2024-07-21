@@ -14,11 +14,13 @@ import { useTheme } from 'react-native-paper';
 import AppHeader from '../../components/header/AppHeader';
 import { generateReceipt } from './receipt';
 import { QueryClient } from '@tanstack/react-query'
+import { SettingContext } from '../../settings/SettingContext';
 
 function OrderList({route, navigation}: any) {
   //const {selectedPrinter} = route.params;
   const theme = useTheme();
   const {authData} = useContext(AuthContext);
+  const {toPrintCount: count, increment, decrement} = useContext(SettingContext)
 
   const [orderMetaData, setOrderMetaData] = useState<OrderMetaData | null>(
     null,
@@ -43,18 +45,6 @@ function OrderList({route, navigation}: any) {
 
   const {data: orderResponse, isLoading, refetch} = useOrders(orderPayload);
   const {data: orderDetail, isPaused} = useOrderDetail(orderToPrint);
-
-  const [count, setCount] = useState(1);
-
-  const increment = () => {
-    setCount(count + 1);
-  };
-
-  const decrement = () => {
-    if (count > 0) {
-      setCount(count - 1);
-    }
-  };
 
   // clean up
   useEffect(() => {
@@ -125,9 +115,7 @@ function OrderList({route, navigation}: any) {
     if (orderToPrint.order_id) {
       if (orderDetail?.data.data.order_id) {
         if(authData) {
-          //for (let i = 0; i < count; i++) {
-            generateReceipt(orderToPrint, orderDetail, authData, count)
-          //}
+          generateReceipt(orderToPrint, orderDetail, authData, count)
           setOrderToPrint({} as Order) // stop print on rerender
           queryClient.removeQueries( {queryKey:['orderDetail', orderDetail.data.data.order_id]})
         }
@@ -169,10 +157,16 @@ function OrderList({route, navigation}: any) {
     );
   };
 
+  const handleBackButton = async () => {
+    if (BLEPrinter) {
+      await BLEPrinter.closeConn();
+    }
+  }
+
   return (
     <SafeAreaView style={{backgroundColor: theme.colors.background, flex: 1}}>
       <View style={{marginHorizontal: 10}}>
-        <AppHeader title='Orders' navigation={navigation} backButton={true}/>
+        <AppHeader title='Orders' navigation={navigation} backButton={true} backButtonHandler={handleBackButton}/>
       <View style={{...styles.listContainer, flexDirection: 'column', marginTop: 20, backgroundColor: "#FFCDC3"}}>
         <View style={{flexDirection: 'column', gap: 8}}>
           <Text style={{...styles.title, fontSize: 26}}>
@@ -209,20 +203,6 @@ function OrderList({route, navigation}: any) {
     </SafeAreaView>
   );
 }
-
-const pickerSelectStyles = StyleSheet.create({
-  inputAndroid: {
-      fontSize: 16,
-      paddingHorizontal: 10,
-      paddingVertical: 8,
-      borderWidth: 0.5,
-      borderColor: 'black',
-      borderRadius: 8,
-      color: 'black',
-      paddingRight: 30
-  }
-});
-
 
 const styles = StyleSheet.create({
   listContainer: {

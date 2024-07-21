@@ -6,6 +6,7 @@ import {QueryClient} from '@tanstack/react-query';
 
 interface AppHeaderProps {
   backButton?: boolean;
+  backButtonHandler?: () => void;
   title: string;
   logoutButton?: boolean;
   navigation: any;
@@ -13,6 +14,7 @@ interface AppHeaderProps {
 
 function AppHeader({
   backButton = false,
+  backButtonHandler,
   title,
   logoutButton = true,
   navigation,
@@ -30,6 +32,9 @@ function AppHeader({
   }, [navigation, authData]);
 
   const handleBackButton = () => {
+    if (backButtonHandler != undefined) {
+      backButtonHandler();
+    }
     navigation.goBack();
   };
 

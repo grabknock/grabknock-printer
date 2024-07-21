@@ -51,15 +51,18 @@ function BluetoothDevices({navigation}: any): React.JSX.Element {
     });
   }, []);
 
-  const _connectPrinter = (printer: IBLEPrinter) => {
+  const _connectPrinter = async (printer: IBLEPrinter) => {
+    console.log("_connectPrinter")
     setLoading(true);
+    console.log(loading);
     //connect printer
     try {
-      BLEPrinter.connectPrinter(printer.inner_mac_address).then(
+      await BLEPrinter.connectPrinter(printer.inner_mac_address).then(
         selectedPrinter => {
+          console.log(loading);
           console.log('selected printer', selectedPrinter);
+          console.log(loading);
           setCurrentPrinter(selectedPrinter);
-          setLoading(false);
           printTextTest();
           navigation.navigate('OrderList', {
             selectedPrinter: selectedPrinter,
@@ -80,10 +83,6 @@ function BluetoothDevices({navigation}: any): React.JSX.Element {
   const printBillTest = () => {
     currentPrinter && BLEPrinter.printBill('<C>sample bill</C>');
   };
-
-  if (loading) {
-    return <AppLoader />;
-  }
 
   type ItemProps = {printer: IBLEPrinter};
   const PrinterTile = ({printer}: ItemProps) => {
@@ -110,7 +109,9 @@ function BluetoothDevices({navigation}: any): React.JSX.Element {
     );
   };
 
-  return (
+  return loading ? (
+    <AppLoader />
+  ) : (
     <SafeAreaView style={{backgroundColor: theme.colors.background, flex: 1}}>
       <View style={{marginHorizontal: 10, flex: 1}}>
         <AppHeader title="Bluetooh Devices" navigation={navigation} />

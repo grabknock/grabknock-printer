@@ -10,6 +10,7 @@ import Toast, {
   ErrorToast,
   SuccessToast,
 } from 'react-native-toast-message';
+import SettingProvider from './src/settings/SettingContext';
 
 function App(this: any): React.JSX.Element {
   const toastConfig = {
@@ -36,13 +37,13 @@ function App(this: any): React.JSX.Element {
     ...DefaultTheme,
     myOwnProperty: true,
     colors: {
-      primary: "#49494C",
-      onSurface: "#AAAAAA", // text
+      primary: '#49494C',
+      onSurface: '#AAAAAA', // text
       //secondary: "#49CC93",
-      tertiary: "#49CC93",
-      background: "#FFFFFF",
-      onSurfaceVariant: "#AAAAAA" // placeholder
-    }
+      tertiary: '#49CC93',
+      background: '#FFFFFF',
+      onSurfaceVariant: '#AAAAAA', // placeholder
+    },
   };
 
   useEffect(() => {
@@ -55,11 +56,13 @@ function App(this: any): React.JSX.Element {
 
   return (
     <>
-      <AuthProvider>
-        <PaperProvider theme={theme}>
-          <Routes />
-        </PaperProvider>
-      </AuthProvider>
+      <SettingProvider>
+        <AuthProvider>
+          <PaperProvider theme={theme}>
+            <Routes />
+          </PaperProvider>
+        </AuthProvider>
+      </SettingProvider>
       <Toast config={toastConfig} />
     </>
   );

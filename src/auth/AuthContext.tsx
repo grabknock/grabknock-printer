@@ -1,6 +1,7 @@
 import React, {createContext, useState, useContext, useEffect} from 'react';
 import {AuthContextData, UserData} from './types';
 import { getStorageData, removeStorageData, storeData } from '../utils/jwt';
+import { BLEPrinter } from 'react-native-thermal-receipt-printer';
 
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
@@ -44,6 +45,9 @@ const AuthProvider = ({children}: any) => {
     setAuthData(null);
     removeStorageData("ACCESS_TOKEN")
     removeStorageData("ADMIN_USER")
+    if (BLEPrinter) {
+      await BLEPrinter.closeConn();
+    }
   }
 
   return (
