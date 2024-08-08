@@ -45,6 +45,7 @@ export interface OrderDetail {
   order_type: string;
   pickup_type: string;
   pickup_type_value: any | null;
+  pickup_type_value_str: string | null;
   billing_address: BillingAddress;
   free_product: FreeProduct | null;
   shipping_address: ShippingAddress | null;
@@ -54,6 +55,7 @@ export interface OrderDetail {
   updated_at: null;
   updated_at_str: string;
   job_id: string | null;
+  customer_name?: string | null;
 }
 
 export interface FreeProduct {

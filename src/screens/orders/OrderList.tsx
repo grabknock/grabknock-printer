@@ -161,6 +161,11 @@ function OrderList({route, navigation}: any) {
                 Order Type: {order.order_type}
               </Text>
               <Text style={styles.textGrey}>Pick Up: {order.pickup_type}</Text>
+              {
+                order.pickup_type_value_str && (
+                  <Text style={styles.textGrey}>Time: {order.pickup_type_value_str}</Text>
+                )
+              }
             </View>
             <View style={{flexDirection: 'column', gap: 5}}>
               <Text style={styles.status}>{order.status}</Text>

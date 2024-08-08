@@ -130,6 +130,7 @@ function LoginScreen({navigation}: any) {
             <View>
               <TextInput
                 textColor={theme.colors.primary}
+                autoCapitalize='none'
                 label="Email"
                 mode="outlined"
                 style={styles.input}
@@ -143,6 +144,7 @@ function LoginScreen({navigation}: any) {
               <Separator marginVertical={4} />
 
               <TextInput
+                autoCapitalize='none'
                 textColor={theme.colors.primary}
                 label="Password"
                 mode="outlined"

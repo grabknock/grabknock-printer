@@ -62,6 +62,7 @@ export interface Order {
   order_type: string;
   pickup_type: string;
   pickup_type_value: string | null;
+  pickup_type_value_str: string | null;
   line_item_count: number;
   free_product: string | null;
   created_at: number;

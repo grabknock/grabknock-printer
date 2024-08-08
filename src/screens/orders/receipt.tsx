@@ -68,7 +68,11 @@ export function generateReceipt(
       );
 
       let receiptContent = `<CM>${authData?.restaurant_name}</CM>\n\n`;
-      receiptContent += `<C>Order ID: ${orderToPrint.order_id}</C>\n\n`;
+      receiptContent += `<C>Order ID: ${orderToPrint.order_id}</C>\n`;
+      if(orderDetail.data.data.customer_name) {
+        receiptContent += `<CM>${orderDetail.data.data.customer_name}</CM>\n\n`;
+      }
+      
       receiptContent += `<D>Billed To: </D>\n`;
       receiptContent += `<L>${orderDetail.data.data.billing_address.first_name} ${orderDetail.data.data.billing_address.last_name}</L>\n`;
       receiptContent += `<L>${orderDetail.data.data.billing_address.address_line_1}</L>\n`;
@@ -82,9 +86,15 @@ export function generateReceipt(
         orderDetail.data.data.order_type == 'DELIVERY' &&
         orderDetail.data.data.shipping_address
       ) {
-        receiptContent += `<L>Pickup Time: ${new Date(
-          orderDetail.data.data.pickup_type_value,
-        ).toLocaleString()}<L>\n\n`;
+
+        if (orderDetail.data.data.pickup_type_value) {
+          // receiptContent += `<L>Pickup Time: ${new Date(
+          //   orderDetail.data.data.pickup_type_value,
+          // ).toLocaleString()}<L>\n\n`;
+
+          receiptContent += `<L>Pickup Time: ${orderDetail.data.data.pickup_type_value_str}<L>\n\n`;
+        }
+        
 
         receiptContent += `<D>Delivery Address: </D>\n`;
         receiptContent += `<L>${orderDetail.data.data.shipping_address.first_name} ${orderDetail.data.data.shipping_address.last_name}</L>\n`;
@@ -127,7 +137,11 @@ export function generateReceipt(
             });
           }
 
-          return toPrint;
+          if (index > 0) {
+            receiptContent += `<L> </L>\n`
+          }
+
+          return `${toPrint}`;
         },
       );
 
