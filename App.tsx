@@ -37,6 +37,7 @@ function App(this: any): React.JSX.Element {
     ...DefaultTheme,
     myOwnProperty: true,
     colors: {
+      ...DefaultTheme.colors,
       primary: '#49494C',
       onSurface: '#AAAAAA', // text
       //secondary: "#49CC93",

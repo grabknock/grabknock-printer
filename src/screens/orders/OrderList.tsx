@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Pressable,
   StyleSheet,
@@ -23,6 +24,7 @@ import AppHeader from '../../components/header/AppHeader';
 import {generateReceipt} from './receipt';
 import {QueryClient} from '@tanstack/react-query';
 import {SettingContext} from '../../settings/SettingContext';
+import CustomDialog from '../../components/dialog/CustomDialog';
 
 function OrderList({route, navigation}: any) {
   //const {selectedPrinter} = route.params;
@@ -42,6 +44,7 @@ function OrderList({route, navigation}: any) {
   const [orders, setOrders] = useState<Order[] | []>([]);
   const [orderToPrint, setOrderToPrint] = useState<Order>({} as Order);
   const [orderCountBefore, setOrderCountBefore] = useState<number>(0);
+  const [displayDialog, setDisplayDialog] = useState<boolean>(false);
 
   const orderPayload = {
     restaurant_id: authData?.restaurant_id,
@@ -139,13 +142,26 @@ function OrderList({route, navigation}: any) {
     }
   };
 
+  const handleOrderPress = (order: Order) => {
+    setOrderToPrint(order);
+  };
+
   type ItemProps = {order: Order};
   const OrderTile = ({order}: ItemProps) => {
     return (
       <TouchableHighlight
         underlayColor={'#D0D0D0'}
         onPress={() => {
-          setOrderToPrint(order);
+          // setDisplayDialog(true);
+          // setOrderToPrint(order);
+          Alert.alert('', `Print Receipt for Order Id: ${order.order_id}`, [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'Confirm', onPress: () => handleOrderPress(order)},
+          ]);
         }}>
         <View style={styles.listContainer}>
           <View
@@ -156,16 +172,17 @@ function OrderList({route, navigation}: any) {
             }}>
             <View style={{flexDirection: 'column', gap: 1}}>
               <Text style={styles.title}>{order.order_id}</Text>
+              <Text style={styles.title}>{order.customer_name}</Text>
               <Text style={styles.textGrey}>{order.created_at_str}</Text>
               <Text style={{...styles.textGrey, marginTop: 10}}>
                 Order Type: {order.order_type}
               </Text>
               <Text style={styles.textGrey}>Pick Up: {order.pickup_type}</Text>
-              {
-                order.pickup_type_value_str && (
-                  <Text style={styles.textGrey}>Time: {order.pickup_type_value_str}</Text>
-                )
-              }
+              {order.pickup_type_value_str && (
+                <Text style={styles.textGrey}>
+                  Time: {order.pickup_type_value_str}
+                </Text>
+              )}
             </View>
             <View style={{flexDirection: 'column', gap: 5}}>
               <Text style={styles.status}>{order.status}</Text>
@@ -175,6 +192,10 @@ function OrderList({route, navigation}: any) {
         </View>
       </TouchableHighlight>
     );
+  };
+
+  const hideDialog = () => {
+    setDisplayDialog(false);
   };
 
   const handleBackButton = async () => {
@@ -258,7 +279,7 @@ function OrderList({route, navigation}: any) {
               </View>
             </View>
             <Button
-              style={{padding: 0,  marginLeft: 20, marginTop: 5}}
+              style={{padding: 0, marginLeft: 20, marginTop: 5}}
               icon="printer-outline"
               mode="text"
               onPress={() => {
@@ -276,6 +297,14 @@ function OrderList({route, navigation}: any) {
           keyExtractor={item => item.order_id}
         />
       </View>
+      {displayDialog && (
+        <CustomDialog
+          title="Print Order?"
+          visible={displayDialog}
+          hideDialog={hideDialog}
+          handleConfirm={handleOrderPress}
+        />
+      )}
     </SafeAreaView>
   );
 }
